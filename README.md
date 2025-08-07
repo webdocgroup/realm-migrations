@@ -151,3 +151,38 @@ const realm = new Realm({
     schema,
 });
 ```
+
+### 5. Modify Data During Migration (Example)
+
+```ts
+// ./schemas/Users/V3/index.ts
+export const UsersV3Schema: Realm.ObjectSchema = {
+    name: 'Users',
+    primaryKey: 'id',
+    properties: {
+        id: 'string',
+        firstName: 'string',
+        lastName: 'string',
+    },
+};
+
+export const SplitUserNameToFirstAndLast: Migration = {
+    description: 'Split user name to distinct first and last properties',
+    schemas: [UsersV3Schema],
+    migrate: (prevRealm, nextRelam) => {
+        const oldUsers = prevRealm.objects('Users');
+        const newUsers = nextRelam.objects('Users');
+
+        // loop through all objects and set the property in the
+        // new schema
+        for (const userIndex in oldUsers) {
+            const oldUser = oldUsers[userIndex];
+            const newUser = newUsers[userIndex];
+            const [firstName, lastName] = oldUser.name.split(' ');
+
+            newUser.firstName = firstName;
+            newUser.lastName = lastName;
+        }
+    },
+};
+```
