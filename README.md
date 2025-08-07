@@ -15,3 +15,7 @@ Realm Migration Service provides a type-safe, step-based migration utility for [
 - ✅ Designed for React Native + Realm
 
 ---
+
+## ❓ Why
+
+Managing database schema changes in production apps is challenging. Each new version of your schema can introduce breaking changes, and missing a migration step can lead to data corruption or app crashes. Ensuring that every migration runs exactly once, in the correct order, is critical for data integrity and a smooth user experience. This library helps you structure and track migrations, so you can confidently evolve your Realm schemas without fear of missing or duplicating migration logic.
