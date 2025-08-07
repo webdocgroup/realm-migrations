@@ -186,3 +186,7 @@ export const SplitUserNameToFirstAndLast: Migration = {
     },
 };
 ```
+
+## 🧪 Compatibility
+
+This library has been tested with **Realm version 20.x**. It is recommended to use Realm 20 or later for best compatibility.
