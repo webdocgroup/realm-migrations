@@ -1,0 +1,49 @@
+{
+  "name": "@webdocgroup/realm-migrations",
+  "version": "1.0.0",
+  "description": "Realm DB migration service for React Native",
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/cjs/index.js",
+      "import": "./dist/esm/index.js",
+      "types": "./dist/esm/index.d.ts"
+    }
+  },
+  "peerDependencies": {
+    "realm": "^20.1.0"
+  },
+  "scripts": {
+    "clean-dist": "rm -rf dist",
+    "build:esm": "tsc --project tsconfig.esm.json",
+    "build:cjs": "tsc --project tsconfig.cjs.json",
+    "build": "npm run clean-dist && npm run build:esm && npm run build:cjs",
+    "dev": "tsc --watch",
+    "lint": "eslint . --ext .ts",
+    "prepublishOnly": "npm run build",
+    "check-types": "tsc --noEmit",
+    "test": "jest",
+    "test-ci": "jest --ci",
+    "pretty": "prettier --write ."
+  },
+  "files": [
+    "dist"
+  ],
+  "author": "Webdoc",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@typescript-eslint/parser": "^8.39.0",
+    "eslint": "^9.32.0",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "prettier": "^3.6.2",
+    "ts-jest": "^29.4.1",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.39.0"
+  }
+}

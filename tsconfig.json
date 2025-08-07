@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "allowJs": false,
+        "declaration": true,
+        "declarationMap": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "alwaysStrict": false,
+        "skipLibCheck": true,
+        "jsx": "react",
+        "rootDir": "./"
+    },
+    "exclude": ["node_modules", "**/node_modules/*", "dist"]
+}

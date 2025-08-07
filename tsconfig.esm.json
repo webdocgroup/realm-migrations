@@ -1,0 +1,10 @@
+{
+    "extends": "./tsconfig.build.json",
+    "compilerOptions": {
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+        "outDir": "dist/esm",
+        "target": "ES2020",
+        "allowSyntheticDefaultImports": true
+    }
+}
