@@ -1,0 +1,40 @@
+{
+  "name": "@webdocgroup/realm-migrations",
+  "version": "0.1.0",
+  "description": "Realm DB migration service for React Native",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "peerDependencies": {
+    "realm": "^20.1.0"
+  },
+  "scripts": {
+    "build": "tsc && tsc --project tsconfig.cjs.json",
+    "dev": "tsc --watch",
+    "lint": "eslint . --ext .ts",
+    "prepublishOnly": "npm run build",
+    "check-types": "tsc --noEmit",
+    "test": "jest",
+    "test-ci": "jest --ci",
+    "pretty": "prettier --write ."
+  },
+  "files": [
+    "dist"
+  ],
+  "author": "Webdoc",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@typescript-eslint/parser": "^8.39.0",
+    "eslint": "^9.32.0",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.2"
+  }
+}
