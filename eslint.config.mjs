@@ -6,7 +6,15 @@ export default tseslint.config(
     js.configs.recommended,
     ...tseslint.configs.recommended,
     {
-        ignores: ['**/build/**', '**/jest.config.js'],
+        ignores: [
+            '**/dist/**',
+            '**/jest.config.js',
+            '**/eslint.config.*',
+            '**/tsconfig*.json',
+            '**/__mocks__/**',
+            '**/*.mock.ts',
+            '.prettierrc.js',
+        ],
     },
     {
         rules: {
@@ -19,7 +27,7 @@ export default tseslint.config(
         },
         rules: {
             eqeqeq: ['error', 'always'],
-            semi: ['error', 'always', { switchCase: 1 }],
+            semi: ['error', 'always'],
             indent: ['error', 4],
             'no-extra-semi': 'error',
             'no-implicit-coercion': [

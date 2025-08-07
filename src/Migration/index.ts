@@ -1,4 +1,5 @@
 import Realm from 'realm';
+
 import { Schema } from '../Schema';
 
 export type Migration = {

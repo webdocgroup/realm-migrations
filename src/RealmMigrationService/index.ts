@@ -1,6 +1,7 @@
 import Realm from 'realm';
-import { Schema } from '../Schema';
+
 import { Migration } from '../Migration';
+import { Schema } from '../Schema';
 
 type RealmMigrationWithVersion = Migration & { version: number };
 

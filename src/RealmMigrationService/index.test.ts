@@ -3,8 +3,8 @@ jest.mock('realm');
 import MockedRealm from 'realm';
 
 import { RealmMock } from '../../__mocks__/realm';
-import { RealmMigrationService } from '.';
 import { Schema } from '../Schema';
+import { RealmMigrationService } from '.';
 
 const Realm = MockedRealm as RealmMock;
 
