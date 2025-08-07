@@ -30,12 +30,14 @@ npm install @webdocgroup/realm-migrations
 
 ## 🚀 Usage
 
-### Create A Realm Schema
+### 1. Define a Realm Schema
 
-Create a realm schema for example a users table:
+Create a schema for your Realm objects. For example, a simple Users schema:
 
 ```ts
 // ./schemas/Users/V1/index.ts
+
+import type Realm from 'realm';
 
 export const UsersV1Schema: Realm.ObjectSchema = {
     name: 'Users',
@@ -46,67 +48,58 @@ export const UsersV1Schema: Realm.ObjectSchema = {
 };
 ```
 
-### Create A Migration
+### 2. Create a Migration Step
 
-Create a migration, you can call this whatever you want. It is conventional to prefix the migration name with the data and time e.g `./migrations/202507291336_seed.ts`
+It's conventional to prefix migration filenames with a timestamp for clarity:
 
 ```ts
 // ./migrations/202507291336_seed.ts
 
+import Realm from 'realm';
 import { Migration } from '@webdocgroup/realm-migrations';
 import { UsersV1Schema } from '../schemas/Users/V1';
 
 export const SeedMigration: Migration = {
-    /**
-     * Description should be something to descibe the change
-     * that has been made. This is helpful when debugging
-     * migrations or describing the change to the
-     * database over time.
-     */
-    description: 'Set up the database',
-
-    /**
-     * Add all the schemas you want to apply as part of the
-     * migration. Note you only need to provide schemas
-     * that have be added or changed since the last
-     * migration.
-     */
-    schemas: [UsersV1Schema],
+    description: 'Set up the database', // Describe the change for clarity
+    schemas: [UsersV1Schema], // Only include schemas added/changed since last migration
 };
 ```
 
-### Run Migrations
+### 3. Run Migrations in Your App
 
-In your database service instantiate the Realm Migration Service providing the database name and the migrations to be run.
+Instantiate the migration service and get the latest schema and version:
 
 ```ts
+// index.ts
+
+import Realm from 'realm';
+import { RealmMigrationService } from '@webdocgroup/realm-migrations';
+import { SeedMigration } from './migrations/202507291336_seed';
+
 const databaseName = 'default';
 
+// Run migrations and get the up-to-date schema and version
 const { schema, schemaVersion } = new RealmMigrationService({
-    databaseName: databaseName,
+    databaseName,
     migrations: [SeedMigration],
 }).run();
 
-/**
- * Instantiate your own instance of Realm using the schemaVersion
- * and schemas provided by the migration service.
- *
- * This is your fully migrated Realm instance.
- */
-const instance = new Realm({
+// Instantiate your fully migrated Realm instance with the schema and schema version provided
+const realm = new Realm({
     path: `${databaseName}.realm`,
     schemaVersion,
     schema,
 });
 ```
 
-### Next Migration
+### 4. Add a New Migration (Example)
 
-For example we might want to add a comments schema and add an additonal property to the users schema.
+Suppose you want to add a Comments schema and a new property to Users:
 
 ```ts
-// ./schemas/Comments/V1/index.ts
+import Realm from 'realm';
 
+// ./schemas/Comments/V1/index.ts
 export const CommentsV1Schema: Realm.ObjectSchema = {
     name: 'Comments',
     primaryKey: 'id',
@@ -115,11 +108,8 @@ export const CommentsV1Schema: Realm.ObjectSchema = {
         comment: 'string',
     },
 };
-```
 
-```ts
 // ./schemas/Users/V2/index.ts
-
 export const UsersV2Schema: Realm.ObjectSchema = {
     name: 'Users',
     primaryKey: 'id',
@@ -128,11 +118,8 @@ export const UsersV2Schema: Realm.ObjectSchema = {
         name: 'string', // New property
     },
 };
-```
 
-```ts
 // ./migrations/202508071336_add_comments_and_user_name.ts
-
 import { Migration } from '@webdocgroup/realm-migrations';
 import { CommentsV1Schema } from '../schemas/Comments/V1';
 import { UsersV2Schema } from '../schemas/Users/V2';
@@ -143,20 +130,22 @@ export const AddCommentsAndUserNameMigration: Migration = {
 };
 ```
 
-Add the new migration to the database migration service instance.
+Update the migration service to include the new migration:
 
 ```diff
-const databaseName = 'default';
+// index.ts
+
+import Realm from 'realm';
 
 const { schema, schemaVersion } = new RealmMigrationService({
-    databaseName: databaseName,
+    databaseName,
     migrations: [
         SeedMigration,
-+       AddCommentsAndUserNameMigration,
++       AddCommentsAndUserNameMigration
     ],
 }).run();
 
-const instance = new Realm({
+const realm = new Realm({
     path: `${databaseName}.realm`,
     schemaVersion,
     schema,
