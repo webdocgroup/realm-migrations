@@ -16,7 +16,10 @@
     "realm": "^20.1.0"
   },
   "scripts": {
-    "build": "tsc && tsc --project tsconfig.cjs.json",
+    "clean-dist": "rm -rf dist",
+    "build:esm": "tsc --project tsconfig.esm.json",
+    "build:cjs": "tsc --project tsconfig.cjs.json",
+    "build": "npm run clean-dist && npm run build:esm && npm run build:cjs",
     "dev": "tsc --watch",
     "lint": "eslint . --ext .ts",
     "prepublishOnly": "npm run build",

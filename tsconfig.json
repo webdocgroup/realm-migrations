@@ -1,7 +1,5 @@
 {
     "compilerOptions": {
-        "target": "ESNext",
-        "module": "commonjs",
         "allowJs": false,
         "declaration": true,
         "declarationMap": true,
@@ -11,7 +9,6 @@
         "alwaysStrict": false,
         "skipLibCheck": true,
         "jsx": "react",
-        "outDir": "./build",
         "rootDir": "./"
     },
     "exclude": ["node_modules", "**/node_modules/*", "/build"]
