@@ -110,4 +110,37 @@ describe('RealmMigrationService', () => {
         expect(schemaResult.schema).toEqual(schemas2);
         expect(schemaResult.schemaVersion).toBe(2);
     });
+
+    describe('hooks', () => {
+        it('should support shouldRunMigrations hooks', () => {
+            const shouldRunMigrationsHook = jest.fn(() => false);
+
+            const migrationService = new RealmMigrationService({
+                databaseName: 'testDatabase',
+                migrations: [
+                    {
+                        description: 'Initial migration',
+                        migrate: () => {},
+                        schemas: [
+                            {
+                                name: 'MockUsers',
+                                properties: { id: 'int', name: 'string' },
+                            },
+                        ],
+                    },
+                ],
+                hooks: {
+                    shouldRunMigrations: [shouldRunMigrationsHook],
+                },
+            });
+
+            Realm.__setSchemaVersion(-1);
+
+            migrationService.run();
+
+            expect(Realm.__constructorSpy).not.toHaveBeenCalled();
+
+            expect(shouldRunMigrationsHook).toHaveBeenCalled();
+        });
+    });
 });
