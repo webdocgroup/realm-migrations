@@ -1,5 +1,7 @@
 import Realm from 'realm';
 
+import { Hooks } from '../HookPipelines';
+import { shouldRunMigrationsHook } from '../HookPipelines/shouldRunMigrationsHook';
 import { Migration } from '../Migration';
 import { Schema } from '../Schema';
 
@@ -8,6 +10,7 @@ type RealmMigrationWithVersion = Migration & { version: number };
 export type RealmMigrationServiceConfig = {
     databaseName: string;
     migrations: Migration[];
+    hooks?: Hooks;
 };
 
 type SchemasByName = Record<string, Schema>;
@@ -22,12 +25,16 @@ export class RealmMigrationService {
 
     private databaseName: string;
 
+    private hooks: Hooks;
+
     public constructor({
         databaseName,
         migrations,
+        hooks = {},
     }: RealmMigrationServiceConfig) {
         this.databaseName = databaseName;
         this.migrations = migrations;
+        this.hooks = hooks;
     }
 
     private currentSchemaVersion(): number {
@@ -59,7 +66,20 @@ export class RealmMigrationService {
         currentVersion: number;
         latestMigrationVersion: number;
     }): boolean {
-        return currentVersion < latestMigrationVersion;
+        return shouldRunMigrationsHook({
+            props: {
+                currentVersion,
+                latestMigrationVersion,
+            },
+            hooks: [
+                ...(this.hooks.shouldRunMigrations
+                    ? this.hooks.shouldRunMigrations
+                    : []),
+            ],
+            callback: () => {
+                return currentVersion < latestMigrationVersion;
+            },
+        });
     }
 
     /**
