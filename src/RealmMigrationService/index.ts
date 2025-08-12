@@ -2,6 +2,7 @@ import Realm from 'realm';
 
 import { Hooks } from '../HookPipelines';
 import { shouldRunMigrationsHook } from '../HookPipelines/shouldRunMigrationsHook';
+import { enabled } from '../Hooks/Enabled';
 import { Migration } from '../Migration';
 import { Schema } from '../Schema';
 
@@ -11,6 +12,7 @@ export type RealmMigrationServiceConfig = {
     databaseName: string;
     migrations: Migration[];
     hooks?: Hooks;
+    enabled?: boolean;
 };
 
 type SchemasByName = Record<string, Schema>;
@@ -27,14 +29,18 @@ export class RealmMigrationService {
 
     private hooks: Hooks;
 
+    private enabled: boolean;
+
     public constructor({
         databaseName,
         migrations,
         hooks = {},
+        enabled = true,
     }: RealmMigrationServiceConfig) {
         this.databaseName = databaseName;
         this.migrations = migrations;
         this.hooks = hooks;
+        this.enabled = enabled;
     }
 
     private currentSchemaVersion(): number {
@@ -72,6 +78,7 @@ export class RealmMigrationService {
                 latestMigrationVersion,
             },
             hooks: [
+                enabled({ enabled: this.enabled }),
                 ...(this.hooks.shouldRunMigrations
                     ? this.hooks.shouldRunMigrations
                     : []),
