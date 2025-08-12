@@ -1,6 +1,6 @@
 {
   "name": "@webdocgroup/realm-migrations",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Realm DB migration service for React Native",
   "publishConfig": {
     "access": "public"
@@ -34,6 +34,19 @@
   "files": [
     "dist"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webdocgroup/realm-migrations.git"
+  },
+  "keywords": [
+    "Realm",
+    "React Native",
+    "Migrations"
+  ],
+  "bugs": {
+    "url": "https://github.com/webdocgroup/realm-migrations/issues"
+  },
+  "homepage": "https://github.com/webdocgroup/realm-migrations#readme",
   "author": "Webdoc",
   "license": "MIT",
   "devDependencies": {
