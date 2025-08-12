@@ -2,7 +2,7 @@
 
 **Structured, predictable schema migrations for Realm in React Native.**
 
-Realm Migration Service provides a type-safe, step-based migration utility for [Realm](https://www.mongodb.com/docs/atlas/device-sdks/sdk/react-native/) in React Native apps. Define clear migration steps and compose them into a single `migration` function to manage schema evolution with confidence.
+Realm Migration Service provides a type-safe, step-based, and pluggable migration utility for [Realm](https://www.mongodb.com/docs/atlas/device-sdks/sdk/react-native/) in React Native apps. Define clear migration steps and compose them into a single `migration` function to manage schema evolution with confidence.
 
 ---
 
@@ -186,6 +186,68 @@ export const SplitUserNameToFirstAndLast: Migration = {
     },
 };
 ```
+
+## 🪝 Hooks
+
+You can add custom functionality to the migration process through hooks. Hooks allow you to control or extend the behavior of the migration service at specific points.
+
+### Supported Hooks
+
+#### **ShouldRunMigrations**
+
+This hook determines whether migrations should run. You can use it to add custom logic to control the execution of migrations.
+
+##### Example: Preventing Migrations
+
+To prevent migrations from running under certain conditions, return early from your custom hook:
+
+```ts
+import { ShouldRunMigrationsHook } from '@webdocgroup/realm-migrations';
+
+const customShouldMigrationsRunHook: ShouldRunMigrationsHook = (
+    props,
+    next
+) => {
+    // Prevent migrations by returning early
+    if (props.currentVersion === -1) {
+        return false;
+    }
+
+    // Or allow the next hook in the chain to execute
+    return next(props);
+};
+
+// Pass your custom hook into the configuration
+const migrationService = new RealmMigrationService({
+    // ...
+    hooks: {
+        shouldRunMigrations: [customShouldMigrationsRunHook],
+    },
+});
+```
+
+##### Example: Post-Processing After the Hook
+
+To execute custom code after the primary hook has run, you could override or log the result:
+
+```ts
+import { ShouldRunMigrationsHook } from '@webdocgroup/realm-migrations';
+
+const customShouldMigrationsRunHook: ShouldRunMigrationsHook = (
+    props,
+    next
+) => {
+    // Call the next hooks and capture their result
+    const result = next(props);
+
+    // Log or modify the result as needed
+    console.log('Will migrations run:', result);
+
+    return result;
+};
+```
+
+By using hooks, you can customize the migration process to suit your application's specific requirements.
 
 ## 🧪 Compatibility
 
