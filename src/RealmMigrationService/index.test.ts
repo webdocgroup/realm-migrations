@@ -143,4 +143,58 @@ describe('RealmMigrationService', () => {
             expect(shouldRunMigrationsHook).toHaveBeenCalled();
         });
     });
+
+    it('should support disabling the migrations by default', () => {
+        const migrationService = new RealmMigrationService({
+            databaseName: 'testDatabase',
+            migrations: [
+                {
+                    description: 'Initial migration',
+                    migrate: () => {},
+                    schemas: [
+                        {
+                            name: 'MockUsers',
+                            properties: { id: 'int', name: 'string' },
+                        },
+                    ],
+                },
+            ],
+            enabled: false,
+        });
+
+        Realm.__setSchemaVersion(-1);
+
+        const { schemaVersion } = migrationService.run();
+
+        expect(Realm.__constructorSpy).not.toHaveBeenCalled();
+
+        expect(schemaVersion).toBe(-1);
+    });
+
+    it('should support enabling the migrations by default', () => {
+        const migrationService = new RealmMigrationService({
+            databaseName: 'testDatabase',
+            migrations: [
+                {
+                    description: 'Initial migration',
+                    migrate: () => {},
+                    schemas: [
+                        {
+                            name: 'MockUsers',
+                            properties: { id: 'int', name: 'string' },
+                        },
+                    ],
+                },
+            ],
+            enabled: true,
+        });
+
+        Realm.__setSchemaVersion(-1);
+
+        const { schemaVersion } = migrationService.run();
+
+        expect(Realm.__constructorSpy).toHaveBeenCalled();
+
+        expect(schemaVersion).toBe(1);
+    });
 });
