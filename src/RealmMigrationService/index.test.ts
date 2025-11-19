@@ -111,6 +111,62 @@ describe('RealmMigrationService', () => {
         expect(schemaResult.schemaVersion).toBe(2);
     });
 
+    it('should only run pending migrations (not re-run previous)', () => {
+        const databaseName = 'testDatabasePendingOnly';
+        const migrateMock1 = jest.fn();
+        const migrateMock2 = jest.fn();
+        const schemas1: Schema[] = [
+            {
+                name: 'MockUsers',
+                properties: { id: 'int', name: 'string' },
+            },
+        ];
+        const schemas2: Schema[] = [
+            {
+                name: 'MockUsers',
+                properties: {
+                    id: 'int',
+                    name: 'string',
+                    age: 'int',
+                },
+            },
+            {
+                name: 'MockPosts',
+                properties: { id: 'int', content: 'string' },
+            },
+        ];
+
+        const migrationService = new RealmMigrationService({
+            databaseName,
+            migrations: [
+                {
+                    description: 'First migration',
+                    migrate: migrateMock1,
+                    schemas: schemas1,
+                },
+                {
+                    description: 'Second migration',
+                    migrate: migrateMock2,
+                    schemas: schemas2,
+                },
+            ],
+        });
+
+        Realm.__setSchemaVersion(1);
+
+        const result = migrationService.run();
+
+        // only second migration should run once
+        expect(Realm.__constructorSpy).toHaveBeenCalledTimes(1);
+        expect(Realm.__constructorSpy).toHaveBeenCalledWith({
+            path: `${databaseName}.realm`,
+            schema: schemas2,
+            onMigration: migrateMock2,
+            schemaVersion: 2,
+        });
+        expect(result.schemaVersion).toBe(2);
+    });
+
     describe('hooks', () => {
         it('should support shouldRunMigrations hooks', () => {
             const shouldRunMigrationsHook = jest.fn(() => false);
