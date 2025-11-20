@@ -43,7 +43,11 @@ export class RealmMigrationService {
         this.enabled = enabled;
     }
 
-    private currentSchemaVersion(): number {
+    /**
+     *
+     * @example -1 if the database has never been created
+     */
+    private currentSchemaVersion(): -1 | number {
         const dbPath = `${this.databaseName}.realm`;
         const currentSchemaVersion = Realm.schemaVersion(dbPath);
 
@@ -117,10 +121,7 @@ export class RealmMigrationService {
     }
 
     private migrationsToRun(): RealmMigrationWithVersion[] {
-        const currentSchemaVersion = Math.max(
-            0,
-            this.currentSchemaVersion() - 1
-        );
+        const currentSchemaVersion = Math.max(0, this.currentSchemaVersion());
 
         return this.migrations
             .map((migration, index) => ({
