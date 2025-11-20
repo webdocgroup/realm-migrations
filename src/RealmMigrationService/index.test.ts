@@ -167,6 +167,85 @@ describe('RealmMigrationService', () => {
         expect(result.schemaVersion).toBe(2);
     });
 
+    it('should run all migrations when schema version is -1 (fresh database)', () => {
+        const databaseName = 'testDatabaseFresh';
+        const migrateMock1 = jest.fn();
+        const migrateMock2 = jest.fn();
+        const schemas1: Schema[] = [
+            {
+                name: 'MockUsers',
+                properties: { id: 'int', name: 'string' },
+            },
+        ];
+        const schemas2: Schema[] = [
+            {
+                name: 'MockUsers',
+                properties: { id: 'int', name: 'string', age: 'int' },
+            },
+        ];
+
+        const migrationService = new RealmMigrationService({
+            databaseName,
+            migrations: [
+                { description: 'm1', migrate: migrateMock1, schemas: schemas1 },
+                { description: 'm2', migrate: migrateMock2, schemas: schemas2 },
+            ],
+        });
+
+        Realm.__setSchemaVersion(-1);
+
+        const result = migrationService.run();
+
+        expect(Realm.__constructorSpy).toHaveBeenCalledTimes(2);
+        expect(result.schemaVersion).toBe(2);
+    });
+
+    it('should run 2 pending migrations', () => {
+        const databaseName = 'testDatabaseAlreadyMigrated';
+        const migrateMock1 = jest.fn();
+        const migrateMock2 = jest.fn();
+        const migrateMock3 = jest.fn();
+        const schemas1: Schema[] = [
+            {
+                name: 'MockUsers',
+                properties: { id: 'int', name: 'string' },
+            },
+        ];
+        const schemas2: Schema[] = [
+            {
+                name: 'MockUsers',
+                properties: { id: 'int', name: 'string', age: 'int' },
+            },
+        ];
+        const schemas3: Schema[] = [
+            {
+                name: 'MockUsers',
+                properties: {
+                    id: 'int',
+                    name: 'string',
+                    age: 'int',
+                    nickname: 'string',
+                },
+            },
+        ];
+
+        const migrationService = new RealmMigrationService({
+            databaseName,
+            migrations: [
+                { description: 'm1', migrate: migrateMock1, schemas: schemas1 },
+                { description: 'm2', migrate: migrateMock2, schemas: schemas2 },
+                { description: 'm3', migrate: migrateMock3, schemas: schemas3 },
+            ],
+        });
+
+        Realm.__setSchemaVersion(1);
+
+        const result = migrationService.run();
+
+        expect(Realm.__constructorSpy).toHaveBeenCalledTimes(2);
+        expect(result.schemaVersion).toBe(3);
+    });
+
     describe('hooks', () => {
         it('should support shouldRunMigrations hooks', () => {
             const shouldRunMigrationsHook = jest.fn(() => false);
